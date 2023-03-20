@@ -1,13 +1,23 @@
-import { useState } from "react";
+import { ClipboardEvent, useState } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
 import { Button, Box, TextField, Menu, MenuItem } from "@mui/material";
 import DropdownButton from "./DropDown";
+import { Parser } from './parser/parser';
+import { FunctionFragment } from './parser/type';
 
 function App() {
   const [address, setAddress] = useState<string>();
-  const [Abi, setAbi] = useState<string>();
+  const [abi, setAbi] = useState<FunctionFragment[]>();
+  const [showForm,setShowForm] = useState(false);
+
+  function handlePaste(event: ClipboardEvent<HTMLDivElement>): void {
+    const text = event.clipboardData.getData("text");
+    const frags = Parser.parse(text);
+    setAbi(frags)
+    setShowForm(true)
+  }
 
   return (
     <Box id="main-container">
@@ -24,9 +34,10 @@ function App() {
           placeholder="ABI"
           multiline
           rows={30}
+          onPaste={(event)=> handlePaste(event)}
         ></TextField>
       </Box>
-      <DropdownButton></DropdownButton>
+      <DropdownButton fragments={abi} showForm={showForm}></DropdownButton>
     </Box>
   );
 }
