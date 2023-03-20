@@ -14,11 +14,19 @@ export default function DropdownButton(props: Props) {
   const [showInitialMenu, setInitialMenu] = useState(false);
   const [showConstant, setShowConstant] = useState(false);
   const [showNonConstant, setShowNonConstant] = useState(false);
+  const [abi, setAbi] = useState<FunctionFragment[]>();
+  const [buttonColor, setButtonColor] = useState<any>();
 
   useEffect(() => {
     const fragment = props?.fragments ? props.fragments[0] : undefined;
+    const color = handleButtonColor(fragment);
+    setButtonColor(color);
     setFragment(fragment);
   }, [props.showForm]);
+
+  useEffect(() => {
+    setAbi(props.fragments);
+  }, [props.fragments]);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -28,6 +36,8 @@ export default function DropdownButton(props: Props) {
   const handleMenuItemClick = (fragment: FunctionFragment) => {
     setAnchorEl(null);
     setFragment(fragment);
+    const color = handleButtonColor(fragment);
+    setButtonColor(color);
     setShowConstant(false);
     setShowNonConstant(false);
   };
@@ -49,11 +59,24 @@ export default function DropdownButton(props: Props) {
     setShowNonConstant(false);
   };
 
+  const handleButtonColor = (fragment: FunctionFragment | undefined) => {
+    switch (fragment?.stateMutability) {
+      case "nonpayable":
+        return "warning";
+      case "payable":
+        return "error";
+      case "view":
+        return "info";
+      default:
+        return "info";
+    }
+  };
+
   return (
     <Box id="method-container">
       {props.showForm && (
         <Box id="param-container">
-          <h2>{fragment?.name}</h2>
+          <h2>function : {fragment?.name}</h2>
           {fragment?.inputs?.map((input, index) => (
             <TextField label={`${input.name}(${input.type})`} />
           ))}
@@ -65,10 +88,7 @@ export default function DropdownButton(props: Props) {
             <Button variant="outlined" onClick={handleClick}>
               choose method
             </Button>
-            <Button
-              variant="contained"
-              color={fragment?.stateMutability === "view" ? "info" : "warning"}
-            >
+            <Button variant="contained" color={buttonColor}>
               {fragment?.stateMutability !== "view" ? "transact" : "call"}
             </Button>
           </>
@@ -81,7 +101,7 @@ export default function DropdownButton(props: Props) {
       </Menu>
 
       <Menu anchorEl={anchorEl} open={showConstant} onClose={handleClose}>
-        {props.fragments?.map((fragment, index) => {
+        {abi?.map((fragment, index) => {
           if (fragment.stateMutability === "view")
             return (
               <MenuItem onClick={() => handleMenuItemClick(fragment)}>
