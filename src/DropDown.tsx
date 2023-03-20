@@ -42,10 +42,16 @@ export default function DropdownButton(props: Props) {
     setInitialMenu(true);
   };
 
+  const resetParam = () => {
+    const reset = new Map<string, any>();
+    setParam(reset);
+  };
+
   const handleMenuItemClick = (fragment: FunctionFragment) => {
     setAnchorEl(null);
     setFragment(fragment);
     const color = handleButtonColor(fragment);
+    resetParam();
     setButtonColor(color);
     setShowConstant(false);
     setShowNonConstant(false);
@@ -104,7 +110,12 @@ export default function DropdownButton(props: Props) {
   }
 
   function encodeParams(fragment: FunctionFragment) {
+    
     const params: Map<string, any> = structuredClone(param);
+
+    if (params.size === 0) {
+      return []
+    }
 
     const arr = [];
 
@@ -112,6 +123,9 @@ export default function DropdownButton(props: Props) {
       const arg = params.get(ioFrag.name);
       arr.push(arg);
     }
+
+    console.log(params);
+    console.log(arr);
 
     return arr;
   }
