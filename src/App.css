@@ -4,10 +4,28 @@
   width: 40%;
   justify-content: center;
   gap: 1rem;
-  display: flex;
 }
 
 #main-container {
   display: flex;
   gap: 1rem;
+}
+
+#param-container {
+  display: flex;
+  flex-direction: column;
+  width: 200%;
+  justify-content: center;
+  gap: 1rem;
+}
+
+#method-container {
+  margin-left: 3rem;
+}
+
+#method-action-container {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  margin-top: 0.5rem;
 }
